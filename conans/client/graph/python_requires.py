@@ -194,8 +194,12 @@ class ConanPythonRequire(object):
                 python_require = self._look_for_require(conanfile.alias)
             else:
                 package_layout = self._proxy._cache.package_layout(new_ref, conanfile.short_paths)
-                exports_sources_folder = package_layout.export_sources()
-                exports_folder = package_layout.export()
+                if hasattr(package_layout, 'editable_cpp_info'):
+                    # Editable package does not require exporting
+                    exports_sources_folder = exports_folder = None
+                else:
+                    exports_sources_folder = package_layout.export_sources()
+                    exports_folder = package_layout.export()
                 python_require = PythonRequire(new_ref, module, conanfile,
                                                exports_folder, exports_sources_folder)
             self._cached_requires[ref] = python_require
